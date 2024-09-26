@@ -121,3 +121,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# 使用自定义模型覆盖默认的User模型
+AUTH_USER_MODEL = 'User.User'
