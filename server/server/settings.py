@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,18 +35,22 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "apps.User"
-
+    "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "apps.User",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+
 ]
 
 ROOT_URLCONF = "server.urls"
@@ -80,6 +84,9 @@ DATABASES = {
         "USER": "root",
         "PASSWORD": "123456",
         "NAME": "aq_sys",
+        'OPTIONS': {
+            "init_command": "SET foreign_key_checks = 0;",
+        }
     }
 }
 
@@ -124,3 +131,47 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 使用自定义模型覆盖默认的User模型
 AUTH_USER_MODEL = 'User.User'
+
+# CORS跨域白名单
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
+SIMPLE_JWT = {
+    # token有效时长
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    # token刷新后的有效时间
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+}
+
+# 配置发送邮箱
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'haochenzhang521@qq.com'
+EMAIL_HOST_PASSWORD = 'bghslttxdvgqdiaj'
+DEFAULT_FROM_EMAIL = 'haochenzhang521@qq.com'
+EMAIL_USE_SSL = True
+
+# Redis的基本配置
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+# 配置Django缓存后端为Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# 配置Django的会话后端为Redis
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
