@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,18 +35,22 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "apps.User"
-
+    "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "apps.User",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+
 ]
 
 ROOT_URLCONF = "server.urls"
@@ -124,3 +128,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 使用自定义模型覆盖默认的User模型
 AUTH_USER_MODEL = 'User.User'
+
+# CORS跨域白名单
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
+SIMPLE_JWT = {
+    # token有效时长
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    # token刷新后的有效时间
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+}
+
