@@ -43,6 +43,7 @@ class LoginView(View):
     pass
 
 # 忘记密码视图
+# t
 class RetrieveView(View):
     def post(self, request):
         json_dict = json.loads(request.body)
