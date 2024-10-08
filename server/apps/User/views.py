@@ -43,7 +43,6 @@ class LoginView(View):
     pass
 
 # 忘记密码视图
-# t
 class RetrieveView(View):
     def post(self, request):
         json_dict = json.loads(request.body)
@@ -56,7 +55,7 @@ class RetrieveView(View):
             print(e)
             return JsonResponse({'code': 400, 'errmsg': '邮箱不存在'})
 
-        captcha = SendCaptcha(email)
+        captcha = SendCaptchaEmail(email)
         cache.set('captcha', captcha, timeout=60*2)
 
         return JsonResponse({'code': 200})
@@ -75,10 +74,10 @@ class RetrieveView(View):
 
 
 # 发送验证码
-def SendCaptcha(email):
+def SendCaptchaEmail(email):
     captcha = "".join(random.sample(string.ascii_letters + string.digits, 8))
     title = "找回密码验证码"
-    msg = f'您的验证码为：{captcha}，有效时间为2分钟。'
+    msg = f'您的验证码为：{captcha}，有效时间为2分钟，请不要将验证码告知其他人。'
     send_mail(title, message=msg, recipient_list=[email], from_email=None)
     print("邮件发送成功！")
     return captcha
