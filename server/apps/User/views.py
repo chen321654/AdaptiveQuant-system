@@ -2,14 +2,16 @@ import json
 import re
 import string
 import random
-import time
 
+from captcha.helpers import captcha_image_url
+from captcha.models import CaptchaStore
 from django.core.mail import send_mail
 from django.http import JsonResponse, HttpResponse
 from django.core.cache import cache
 from django.shortcuts import render
 from django.views import View
 from apps.User.models import User
+
 
 # 注册视图
 class RegisterView(View):
@@ -38,9 +40,16 @@ class RegisterView(View):
 
         return JsonResponse({'code': 200, 'msg': '注册成功'})
 
+
 # 登录视图
 class LoginView(View):
-    pass
+    def get(self, request):
+        hashkey = CaptchaStore.generate_key()  # 验证码答案
+        image_url = captcha_image_url(hashkey)  # 验证码地址
+        print(hashkey, image_url)
+        captcha = {'hashkey': hashkey, 'image_url': image_url}
+        return render(request, "login.html", locals())
+
 
 # 忘记密码视图
 class RetrieveView(View):
@@ -56,7 +65,7 @@ class RetrieveView(View):
             return JsonResponse({'code': 400, 'errmsg': '邮箱不存在'})
 
         captcha = SendCaptchaEmail(email)
-        cache.set('captcha', captcha, timeout=60*2)
+        cache.set('captcha', captcha, timeout=60 * 2)
 
         return JsonResponse({'code': 200})
 
@@ -81,3 +90,30 @@ def SendCaptchaEmail(email):
     send_mail(title, message=msg, recipient_list=[email], from_email=None)
     print("邮件发送成功！")
     return captcha
+
+
+# 创建验证码
+def captcha():
+    hashkey = CaptchaStore.generate_key()  # 验证码答案
+    image_url = captcha_image_url(hashkey)  # 验证码地址
+    captcha = {'hashkey': hashkey, 'image_url': image_url}
+    return captcha
+
+
+# 刷新验证码
+def refresh_captcha(request):
+    return HttpResponse(json.dumps(captcha()), content_type='application/json')
+
+
+# 验证验证码
+def jarge_captcha(captchaStr, captchaHashkey):
+    if captchaStr and captchaHashkey:
+        try:
+            # 获取根据hashkey获取数据库中的response值
+            get_captcha = CaptchaStore.objects.get(hashkey=captchaHashkey)
+            if get_captcha.response == captchaStr.lower():  # 如果验证码匹配
+                return True
+        except:
+            return False
+    else:
+        return False
