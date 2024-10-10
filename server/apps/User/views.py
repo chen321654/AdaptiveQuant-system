@@ -48,7 +48,33 @@ class LoginView(View):
         image_url = captcha_image_url(hashkey)  # 验证码地址
         print(hashkey, image_url)
         captcha = {'hashkey': hashkey, 'image_url': image_url}
-        return render(request, "login.html", locals())
+        return JsonResponse({'code': 200, 'data': captcha})
+
+    def post(self, request):
+        json_dict = json.loads(request.body)
+        username = json_dict.get('username')
+        password = json_dict.get('password')
+        vcode = json_dict.get('vcode')
+        hashkey = json_dict.get('hashkey')
+        if not all([username, password]):
+            return JsonResponse({'code': 400, 'errmsg': '参数不全'})
+        if not jarge_captcha(vcode, hashkey):
+            return JsonResponse({'code': 400, 'msg': '验证码错误'})
+        # 检验用户名与密码是否正确
+        from django.contrib.auth import authenticate
+        # authenticate参数为用户和密码，若用户密码正确，返回User信息，否则返回None
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return JsonResponse({'code': 400, 'errmsg': '账号或密码错误'})
+        # session
+        from django.contrib.auth import login
+        login(request, user)
+        request.session.set_expiry(None)
+        response = JsonResponse({'code': 200, 'errmsg': '登陆成功'})
+        response.set_cookie('username', username)
+        return response
+
+
 
 
 # 忘记密码视图

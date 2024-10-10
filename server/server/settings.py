@@ -37,10 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    "rest_framework",
     "rest_framework_simplejwt",
-    "captcha",
     "apps.User",
+    "captcha",
 ]
 
 MIDDLEWARE = [
@@ -177,3 +176,17 @@ CACHES = {
 # 配置Django的会话后端为Redis
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
+
+# 使用django-simple-captcha验证码
+CAPTCHA_IMAGE_SIZE = (80, 30)  # 设置 captcha 图片大小
+CAPTCHA_LENGTH = 6  # 设置字符个数
+CAPTCHA_TIMEOUT = 1  # 超时(minutes)
+# 输入格式：输入框 验证码图片 隐藏域
+# CAPTCHA_OUTPUT_FORMAT = '%(text_field)s %(image)s %(hidden_field)s'
+CAPTCHA_NOISE_FUNCTIONS = (
+    'captcha.helpers.noise_null',
+    'captcha.helpers.noise_arcs',  # 线
+    'captcha.helpers.noise_dots',  # 点
+)
+# 随机字符验证码
+# CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
