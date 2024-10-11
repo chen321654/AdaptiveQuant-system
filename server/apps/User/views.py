@@ -21,6 +21,7 @@ class RegisterView(View):
         username = json_dict.get('username')
         password = json_dict.get('password')
         password_v = json_dict.get('password_v')
+        email = json_dict.get('email')
 
         # 2.验证参数
         if not all([username, password]):
@@ -29,6 +30,7 @@ class RegisterView(View):
             return JsonResponse({'code': 400, 'errmsg': '用户名不符合要求'})
         if password != password_v:
             return JsonResponse({'code': 400, 'errmsg': '两次输入的密码不相同'})
+
 
         # 3.数据入库
         try:
@@ -73,8 +75,6 @@ class LoginView(View):
         response = JsonResponse({'code': 200, 'errmsg': '登陆成功'})
         response.set_cookie('username', username)
         return response
-
-
 
 
 # 忘记密码视图

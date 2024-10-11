@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import datetime
 import os
+import random
+import string
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -177,16 +179,20 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
-# 使用django-simple-captcha验证码
-CAPTCHA_IMAGE_SIZE = (80, 30)  # 设置 captcha 图片大小
-CAPTCHA_LENGTH = 6  # 设置字符个数
-CAPTCHA_TIMEOUT = 1  # 超时(minutes)
-# 输入格式：输入框 验证码图片 隐藏域
-# CAPTCHA_OUTPUT_FORMAT = '%(text_field)s %(image)s %(hidden_field)s'
-CAPTCHA_NOISE_FUNCTIONS = (
-    'captcha.helpers.noise_null',
-    'captcha.helpers.noise_arcs',  # 线
-    'captcha.helpers.noise_dots',  # 点
-)
-# 随机字符验证码
-# CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+
+# 自定义验证码
+def generate_custom_challenge():
+    length = 4  # 验证码长度
+    characters = string.ascii_letters + string.digits  # 包含字母和数字的字符集
+    captcha = ''.join(random.choice(characters) for _ in range(length))  # 生成随机验证码
+    question = captcha  # 验证码的显示文本
+    return question, captcha
+
+
+# 配置 captcha
+# CAPTCHA_LENGTH = 4  # 设置验证码位数 默认: 4
+CAPTCHA_TIMEOUT = 5  # 超时(minute)
+CAPTCHA_FONT_SIZE = 24  # 字体大小 默认:22
+# CAPTCHA_IMAGE_SIZE = (130, 45)  # 设置 图片大小 默认: (200, 60)
+CAPTCHA_CHALLENGE_FUNCT = generate_custom_challenge  # 验证码字符集, 自定义
+
