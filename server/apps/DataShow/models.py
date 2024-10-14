@@ -2,6 +2,7 @@ from django.db import models
 
 from utils.models import BaseModel
 
+
 class Stock(BaseModel):
     id = models.CharField(max_length=64, primary_key=True, verbose_name="股票id")
     open = models.FloatField(verbose_name="开盘价")
