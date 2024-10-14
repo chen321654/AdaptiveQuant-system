@@ -67,11 +67,11 @@ class LoginView(View):
         json_dict = json.loads(request.body)
         username = json_dict.get('username')
         password = json_dict.get('password')
-        vcode = json_dict.get('vcode')
+        captcha = json_dict.get('captcha')
         hashkey = json_dict.get('hashkey')
         if not all([username, password]):
             return JsonResponse({'code': 400, 'msg': '参数不全'})
-        if not jarge_captcha(vcode, hashkey):
+        if not jarge_captcha(captcha, hashkey):
             return JsonResponse({'code': 400, 'msg': '验证码错误'})
         # 检验用户名与密码是否正确
         from django.contrib.auth import authenticate

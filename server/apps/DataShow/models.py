@@ -12,7 +12,7 @@ class Stock(BaseModel):
     volume = models.BigIntegerField(verbose_name="交易额")
 
     class Meta:
-        db_table = "tb_order_info"
+        db_table = "tb_stock"
         verbose_name = '股票信息'
         verbose_name_plural = verbose_name
 
