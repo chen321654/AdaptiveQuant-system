@@ -5,7 +5,7 @@
             <form class="form" @submit.prevent="handleSubmit">
                 <div class="form-group">
                     <label for="username" class="label">用户名</label>
-                    <input id="username" name="username" type="text" autocomplete="nickname" required v-model="Text"
+                    <input id="username" name="username" type="text" autocomplete="nickname" required v-model="username"
                         class="input" />
                 </div>
                 <div class="form-group">
@@ -38,8 +38,6 @@
                         required v-model="confirmPassword" class="input" />
                 </div>
 
-
-
                 <button type="submit" class="submit-button" :disabled="isLoading">
                     {{ isLoading ? '注册中...' : '注册' }}
                 </button>
@@ -58,6 +56,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
 
 const emit = defineEmits(['showLogin', 'registerSuccess'])
 const isSendingCaptcha = ref(false)
@@ -77,19 +76,14 @@ const sendCaptcha = async () => {
 
     isSendingCaptcha.value = true
     try {
-        const response = await fetch('http://127.0.0.1:4523/m1/5211650-4877960-default/User/retrieve/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email: email.value }),
+        const response = await axios.get('http://127.0.0.1:4523/m1/5211650-4877960-default/User/retrieve/', {
+            params: { email: email.value }
         })
 
-        if (response.ok) {
+        if (response.status === 200) {
             alert('验证码已发送，请查看您的邮箱')
         } else {
-            const errorData = await response.json()
-            alert(errorData.message || '发送验证码失败，请重试')
+            alert(response.data.message || '发送验证码失败，请重试')
         }
     } catch (error) {
         console.error('发送验证码错误:', error)
@@ -107,28 +101,19 @@ const handleSubmit = async () => {
 
     isLoading.value = true
     try {
-        const response = await fetch('http://127.0.0.1:4523/m1/5211650-4877960-default/admin/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username.value,
-                email: email.value,
-                passwd: password.value,
-                passwd_v: confirmPassword.value,
-                email_code: captcha.value
-            }),
+        const response = await axios.post('http://127.0.0.1:4523/m1/5211650-4877960-default/admin/register', {
+            username: username.value,
+            email: email.value,
+            passwd: password.value,
+            passwd_v: confirmPassword.value,
+            email_code: captcha.value
         })
 
-        const data = await response.json()
-
-        if (data.code == '200') {
-            console.log('Registration successful', data)
+        if (response.data.code === '200') {
+            console.log('Registration successful', response.data)
             emit('registerSuccess')
         } else {
-            alert(data.msg)
-            captchaRef.value.refreshCaptcha()
+            alert(response.data.msg)
             captcha.value = ''
         }
     } catch (error) {
