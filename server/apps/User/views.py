@@ -26,7 +26,6 @@ class RegisterView(View):
         email = json_dict.get('email')
         email_code = json_dict.get('email_code')
 
-
         # 2.验证参数
         if not all([username, password]):
             return JsonResponse({'code': 400, 'msg': '缺少参数'})

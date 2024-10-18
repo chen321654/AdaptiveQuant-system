@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "apps.User",
     "captcha",
-    "apps.DataShow"
+    "apps.DataShow",
 ]
 
 MIDDLEWARE = [
@@ -117,11 +117,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "zh-Hans"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Shanghai"
 
 USE_I18N = True
 
-USE_TZ = True
+# USE_TZ = True
+USE_TZ = False
+
+USE_L10N = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -196,4 +199,3 @@ CAPTCHA_TIMEOUT = 5  # 超时(minute)
 CAPTCHA_FONT_SIZE = 24  # 字体大小 默认:22
 # CAPTCHA_IMAGE_SIZE = (130, 45)  # 设置 图片大小 默认: (200, 60)
 CAPTCHA_CHALLENGE_FUNCT = generate_custom_challenge  # 验证码字符集, 自定义
-
