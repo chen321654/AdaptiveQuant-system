@@ -54,7 +54,7 @@ const handleSubmit = async () => {
 
     try {
         const token = getToken()
-        const response = await fetch('http://127.0.0.1:4523/m1/5211650-4877960-default/admin/update', {
+        const response = await fetch('http://127.0.0.1:8000/admin/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

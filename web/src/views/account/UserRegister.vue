@@ -76,7 +76,7 @@ const sendCaptcha = async () => {
 
     isSendingCaptcha.value = true
     try {
-        const response = await axios.get('http://127.0.0.1:4523/m1/5211650-4877960-default/User/retrieve/', {
+        const response = await axios.get('http://127.0.0.1:8000/User/retrieve/', {
             params: { email: email.value }
         })
 
@@ -101,7 +101,7 @@ const handleSubmit = async () => {
 
     isLoading.value = true
     try {
-        const response = await axios.post('http://127.0.0.1:4523/m1/5211650-4877960-default/admin/register', {
+        const response = await axios.post('http://127.0.0.1:8000/User/register', {
             username: username.value,
             email: email.value,
             passwd: password.value,

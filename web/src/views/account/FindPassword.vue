@@ -57,7 +57,7 @@ const sendCaptcha = async () => {
 
     isSendingCaptcha.value = true
     try {
-        const response = await fetch('http://127.0.0.1:4523/m1/5211650-4877960-default/admin/e_vcode', {
+        const response = await fetch('http://127.0.0.1:8000/User/retrieve/', {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ const handleSubmit = async () => {
 
     isSubmitting.value = true
     try {
-        const response = await fetch('http://127.0.0.1:4523/m1/5211650-4877960-default/admin/retrieve', {
+        const response = await fetch('http://127.0.0.1:8000/User/retrieve', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
