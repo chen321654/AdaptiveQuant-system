@@ -1,19 +1,68 @@
 <template>
-    <div class="page-container">
-        <header class="header">
-            <div class="login-container">
-                <template v-if="isLoggedIn">
-                    <span class="username">{{ username }}</span>
-                    <span class="separator">|</span>
-                    <button class="logout-button" @click="handleLogout">退出</button>
-                </template>
-                <button v-else class="login-button" @click="showModal('login')">登录</button>
-            </div>
-        </header>
-        <main class="main-content">
-            <h1>欢迎来到我的网站</h1>
-            <p>这里是网站的主要内容区域。</p>
-        </main>
+    <el-container class="layout-container">
+        <el-header height="auto" class="header">
+            <el-menu :default-active="activeIndex" mode="horizontal" :ellipsis="false" @select="handleSelect"
+                background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+                <el-menu-item index="0">
+                    <img style="width: 50px" src="/stock.png" alt="行情中心" />
+                </el-menu-item>
+
+                <el-sub-menu index="1">
+                    <template #title>A股市场</template>
+                    <el-menu-item index="1-1">A股市场</el-menu-item>
+                    <el-menu-item index="1-2">A股指数</el-menu-item>
+                    <el-menu-item index="1-3">A股警示</el-menu-item>
+                </el-sub-menu>
+
+                <el-sub-menu index="2">
+                    <template #title>板块</template>
+                    <el-menu-item index="2-1">概念板块</el-menu-item>
+                    <el-menu-item index="2-2">地狱板块</el-menu-item>
+                    <el-menu-item index="2-3">同花顺行业</el-menu-item>
+                    <el-menu-item index="2-4">见证会行业</el-menu-item>
+                </el-sub-menu>
+
+                <el-sub-menu index="3">
+                    <template #title>数据中心</template>
+                    <el-menu-item index="3-1">龙虎榜</el-menu-item>
+                    <el-menu-item index="3-2">大宗交易</el-menu-item>
+                    <el-menu-item index="3-3">新股申购</el-menu-item>
+                </el-sub-menu>
+
+                <el-menu-item index="4" style="margin-left: auto;">
+                    <template v-if="isLoggedIn">
+                        <span class="username">{{ username }}</span>
+                        <el-button type="text" @click="handleLogout" style="color: #fff;">退出</el-button>
+                    </template>
+                    <el-button v-else type="text" @click="showModal('login')" style="color: #fff;">登录</el-button>
+                </el-menu-item>
+            </el-menu>
+        </el-header>
+
+        <el-container class="main-container">
+            <el-main class="main-content">
+                <el-aside width="200px">
+                    <el-menu default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
+                        background-color="#f0f0f0" text-color="#000000" active-text-color="#ffd04b">
+                        <el-menu-item index="1">
+                            <el-icon><icon-menu /></el-icon>
+                            <span>涨跌分布</span>
+                        </el-menu-item>
+                        <el-menu-item index="2">
+                            <el-icon><icon-menu /></el-icon>
+                            <span>涨跌停</span>
+                        </el-menu-item>
+                        <el-menu-item index="3">
+                            <el-icon>
+                                <setting />
+                            </el-icon>
+                            <span>昨日涨停今日收益</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <Stockindex ref="" />
+            </el-main>
+        </el-container>
 
         <!-- Modal -->
         <div v-if="isModalVisible" class="modal-overlay" @click.self="closeModal">
@@ -25,21 +74,25 @@
                 @showRegister="showModal('register')" @findSuccess="handleFindSuccess" />
             <ResetPassword v-if="currentModal === 'ResetPassword'" @resetSuccess="handleResetSuccess" />
         </div>
-    </div>
+    </el-container>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import Stockindex from './component/stockindex.vue'
 import UserLogin from './account/UserLogin.vue'
 import UserRegister from './account/UserRegister.vue'
 import FindPassword from './account/FindPassword.vue'
 import ResetPassword from './account/ResetPassword.vue'
-import jsCookie from 'js-cookie';
+import jsCookie from 'js-cookie'
+
 
 const isModalVisible = ref(false)
 const currentModal = ref('login')
 const isLoggedIn = ref(false)
 const username = ref('')
+const activeIndex = ref('1')
 
 const showModal = (modalType) => {
     currentModal.value = modalType
@@ -50,73 +103,56 @@ const closeModal = () => {
     isModalVisible.value = false
 }
 
-const handleLoginSuccess = (userData) => {
+const handleLoginSuccess = () => {
     closeModal()
     isLoggedIn.value = true
-    //username.value = UserLogin.value.userData.value
-    username.value = "123456@qq.com"
+    username.value = UserLogin.value.userData.value
 }
 
 const handleRegisterSuccess = () => {
     showModal('login')
 }
+
 const handleFindSuccess = () => {
     showModal('ResetPassword')
 }
+
 const handleResetSuccess = () => {
-    showModal('Login')
+    showModal('login')
 }
 
 const handleLogout = () => {
     isLoggedIn.value = false
     username.value = ''
-    jsCookie.remove('username');
-    location.reload();
+    jsCookie.remove('username')
+    location.reload()
+}
+
+const handleSelect = (key, keyPath) => {
+    console.log(key, keyPath)
+}
+
+const handleOpen = (key, keyPath) => {
+    console.log(key, keyPath)
+}
+
+const handleClose = (key, keyPath) => {
+    console.log(key, keyPath)
 }
 </script>
 
 <style scoped>
-/* @import '@/assets/auth.css'; */
-
-.page-container {
+.layout-container {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
 .header {
-    padding: 1rem;
-    background-color: #f0f2f5;
+    padding: 0;
 }
 
-.login-container {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.login-button {
-    background-color: #4f46e5;
-    color: white;
-    font-weight: 500;
-    padding: 0.625rem 1.25rem;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-}
-
-.login-button:hover {
-    background-color: #4338ca;
-}
-
-.main-content {
-    flex-grow: 1;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+/* .main-container {
+    height: calc(100vh - 60px);
+} */
 
 .modal-overlay {
     position: fixed;
@@ -131,27 +167,46 @@ const handleLogout = () => {
     z-index: 1000;
 }
 
+.main-content {
+    padding: 20px;
+}
+
 .username {
     font-weight: 500;
     margin-right: 0.5rem;
 }
 
-.separator {
-    margin: 0 0.5rem;
-    color: #6b7280;
+:deep(.el-menu) {
+    border-right: none;
 }
 
-.logout-button {
-    background-color: transparent;
-    color: #4f46e5;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border: none;
-    cursor: pointer;
-    transition: color 0.15s ease-in-out;
+:deep(.el-menu--horizontal) {
+    border-bottom: none;
 }
 
-.logout-button:hover {
-    color: #4338ca;
+:deep(.el-menu-item) {
+    font-size: 14px;
 }
+
+.index-card {
+    height: 100%;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* .el-row {
+    margin-bottom: 20px;
+}
+
+.el-row:last-child {
+    margin-bottom: 0;
+}
+
+.el-col {
+    margin-bottom: 20px;
+} */
 </style>
