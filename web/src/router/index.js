@@ -34,6 +34,21 @@ const router = createRouter({
       path: '/PersonalCenter',
       name: 'PersonalCenter',
       component: () => import('../views/personalcenter/PersonalCenter.vue')
+    },
+    {
+      path: '/k_line',
+      name: 'k_line',
+      component: () => import('../views/datashow/k_line.vue')
+    },
+    {
+      path: '/zhexian',
+      name: 'zhexian',
+      component: () => import('../views/datashow/zhexian.vue')
+    },
+    {
+      path: '/demo',
+      name: 'demo',
+      component: () => import('../views/component/stockindex.vue')
     }
   ]
 })
