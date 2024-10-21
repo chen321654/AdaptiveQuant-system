@@ -5,7 +5,6 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
-
 //import store from './stores'
 //创建实例
 const app = createApp(App)

@@ -153,8 +153,6 @@ const tabTime = async (item) => {
     // chart.applyNewData(data);
     chart.applyNewData(genData())
 
-
-
     chart.createIndicator(item.main, true, { id: 'candle_pane' })
 
     chart.removeIndicator(item.main)
@@ -169,6 +167,8 @@ onMounted(async () => {
     //const initialData = await fetchData(klineData.value[0].kline_type);
     //chart.applyNewData(initialData);
     chart.applyNewData(genData())
+    chart.setMaxOffsetLeftDistance(0);
+    chart.setMaxOffsetRightDistance(0);
     active.value = klineData.value[0].time;
 
 });

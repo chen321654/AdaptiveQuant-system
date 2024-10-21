@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref, onMounted } from 'vue';
 
 const captchaUrl = ref('');
@@ -19,10 +20,7 @@ const captchaId = ref('');
 
 const fetchCaptcha = async () => {
     try {
-        const response = await fetch('http://127.0.0.1:4523/m1/5211650-4877960-default/User/login', {
-            method: 'get'
-        }
-        );
+        const response = await axios.get('/User/login');
 
         const data = await response.json();
         captchaUrl.value = data.imageUrl;

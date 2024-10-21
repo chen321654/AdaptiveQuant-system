@@ -45,6 +45,7 @@
 import { ref } from 'vue'
 import Captcha from './Captcha.vue';
 import jsCookie from 'js-cookie';
+import axios from 'axios';
 
 
 const emit = defineEmits(['showRegister', 'showFindPassword', 'loginSuccess'])
@@ -58,29 +59,21 @@ const handleSubmit = async () => {
     isLoading.value = true
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/User/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username.value,
-                password: password.value,
-                captcha: captcha.value,
-                hashkey: captchaRef.value.captchaId.value,
-            }),
+        const response = await axios.post('/User/login', {
+            username: username.value,
+            password: password.value,
+            captcha: captcha.value,
+            hashkey: captchaRef.value.captchaId.value,
         })
 
-        const data = await response.json()
-
-        if (data.code == '200') {
+        if (response.data.code == '200') {
             console.log('Login successful', data)
             userData = response.headers.get('username')
             jsCookie.set(response.headers.get('username'), response.headers.get('sessionid'))
 
             emit('loginSuccess')
         } else {
-            alert(data.msg)
+            alert(response.data.msg)
             captchaRef.value.refreshCaptcha()
             captcha.value = ''
         }

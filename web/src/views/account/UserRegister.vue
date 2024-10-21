@@ -20,8 +20,8 @@
                         <input id="captcha" name="captcha" type="text" required v-model="captcha"
                             class="input captcha-input" placeholder="输入验证码" />
                         <button type="button" class="send-captcha-button" @click="sendCaptcha"
-                            :disabled="isSendingCaptcha">
-                            {{ isSendingCaptcha ? '发送中...' : '发送验证码' }}
+                            :disabled="isSendingCaptcha || countdown > 0">
+                            {{ buttonText }}
                         </button>
                     </div>
                 </div>
@@ -55,11 +55,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import axios from 'axios'
 
 const emit = defineEmits(['showLogin', 'registerSuccess'])
 const isSendingCaptcha = ref(false)
+const countdown = ref(0)
 
 const username = ref('')
 const email = ref('')
@@ -67,6 +68,26 @@ const password = ref('')
 const confirmPassword = ref('')
 const captcha = ref('')
 const isLoading = ref(false)
+
+const buttonText = computed(() => {
+    if (isSendingCaptcha.value) {
+        return '发送中...'
+    } else if (countdown.value > 0) {
+        return `${countdown.value}秒后重新发送`
+    } else {
+        return '发送验证码'
+    }
+})
+
+const startCountdown = () => {
+    countdown.value = 60
+    const timer = setInterval(() => {
+        countdown.value--
+        if (countdown.value === 0) {
+            clearInterval(timer)
+        }
+    }, 1000)
+}
 
 const sendCaptcha = async () => {
     if (!email.value) {
@@ -76,12 +97,13 @@ const sendCaptcha = async () => {
 
     isSendingCaptcha.value = true
     try {
-        const response = await axios.get('http://127.0.0.1:8000/User/retrieve/', {
+        const response = await axios.get('/User/retrieve/', {
             params: { email: email.value }
         })
 
         if (response.status === 200) {
             alert('验证码已发送，请查看您的邮箱')
+            startCountdown()
         } else {
             alert(response.data.message || '发送验证码失败，请重试')
         }
@@ -101,7 +123,7 @@ const handleSubmit = async () => {
 
     isLoading.value = true
     try {
-        const response = await axios.post('http://127.0.0.1:8000/User/register', {
+        const response = await axios.post('/User/register', {
             username: username.value,
             email: email.value,
             passwd: password.value,
@@ -147,10 +169,11 @@ const handleSubmit = async () => {
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
     white-space: nowrap;
+    min-width: 120px;
 }
 
 .send-captcha-button:hover:not(:disabled) {
-    background-color: #c92336;
+    background-color: #3730a3;
 }
 
 .send-captcha-button:disabled {

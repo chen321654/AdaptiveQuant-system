@@ -15,8 +15,8 @@
                         <input id="captcha" name="captcha" type="text" required v-model="captcha"
                             class="input captcha-input" placeholder="输入验证码" />
                         <button type="button" class="send-captcha-button" @click="sendCaptcha"
-                            :disabled="isSendingCaptcha">
-                            {{ isSendingCaptcha ? '发送中...' : '发送验证码' }}
+                            :disabled="isSendingCaptcha || countdown > 0">
+                            {{ buttonText }}
                         </button>
                     </div>
                 </div>
@@ -41,6 +41,7 @@
 <script setup>
 import { ref } from 'vue'
 import ResetPassword from './ResetPassword.vue';
+import axios from 'axios';
 
 const emit = defineEmits(['showLogin', 'showRegister', 'resetSuccess'])
 
@@ -48,7 +49,15 @@ const email = ref('')
 const captcha = ref('')
 const isSendingCaptcha = ref(false)
 const isSubmitting = ref(false)
-
+const buttonText = computed(() => {
+    if (isSendingCaptcha.value) {
+        return '发送中...'
+    } else if (countdown.value > 0) {
+        return `${countdown.value}秒后重新发送`
+    } else {
+        return '发送验证码'
+    }
+})
 const sendCaptcha = async () => {
     if (!email.value) {
         alert('请输入邮箱地址')
@@ -57,12 +66,8 @@ const sendCaptcha = async () => {
 
     isSendingCaptcha.value = true
     try {
-        const response = await fetch('http://127.0.0.1:8000/User/retrieve/', {
-            method: 'get',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email: email.value }),
+        const response = await axios.get('/User/retrieve/', {
+            email: email.value
         })
 
         if (response.ok) {
@@ -87,15 +92,9 @@ const handleSubmit = async () => {
 
     isSubmitting.value = true
     try {
-        const response = await fetch('http://127.0.0.1:8000/User/retrieve', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email.value,
-                captcha: captcha.value,
-            }),
+        const response = await axios.post('/User/retrieve', {
+            email: email.value,
+            captcha: captcha.value,
         })
 
         if (response.ok) {
