@@ -21,7 +21,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-button" :disabled="isSubmitting" @click="ResetPassword">
+                <button type="submit" class="submit-button" :disabled="isSubmitting">
                     {{ isSubmitting ? '提交中...' : '重置密码' }}
                 </button>
             </form>
@@ -39,9 +39,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import ResetPassword from './ResetPassword.vue';
-import axios from 'axios';
+import { ref, computed } from 'vue'
+import axios from 'axios'
 
 const emit = defineEmits(['showLogin', 'showRegister', 'resetSuccess'])
 
@@ -49,6 +48,8 @@ const email = ref('')
 const captcha = ref('')
 const isSendingCaptcha = ref(false)
 const isSubmitting = ref(false)
+const countdown = ref(0)
+
 const buttonText = computed(() => {
     if (isSendingCaptcha.value) {
         return '发送中...'
@@ -58,6 +59,17 @@ const buttonText = computed(() => {
         return '发送验证码'
     }
 })
+
+const startCountdown = () => {
+    countdown.value = 60
+    const timer = setInterval(() => {
+        countdown.value--
+        if (countdown.value === 0) {
+            clearInterval(timer)
+        }
+    }, 1000)
+}
+
 const sendCaptcha = async () => {
     if (!email.value) {
         alert('请输入邮箱地址')
@@ -67,14 +79,14 @@ const sendCaptcha = async () => {
     isSendingCaptcha.value = true
     try {
         const response = await axios.get('/User/retrieve/', {
-            email: email.value
+            params: { email: email.value }
         })
 
-        if (response.ok) {
+        if (response.status === 200) {
             alert('验证码已发送，请查看您的邮箱')
+            startCountdown()
         } else {
-            const errorData = await response.json()
-            alert(errorData.message || '发送验证码失败，请重试')
+            alert(response.data.message || '发送验证码失败，请重试')
         }
     } catch (error) {
         console.error('发送验证码错误:', error)
@@ -92,17 +104,15 @@ const handleSubmit = async () => {
 
     isSubmitting.value = true
     try {
-        const response = await axios.post('/User/retrieve', {
+        const response = await axios.post('/User/retrieve/', {
             email: email.value,
             captcha: captcha.value,
         })
 
-        if (response.ok) {
-
-            emit('findSuccess')
+        if (response.status === 200) {
+            emit('resetSuccess')
         } else {
-            const errorData = await response.json()
-            alert(errorData.message || '重置密码失败，请重试')
+            alert(response.data.message || '重置密码失败，请重试')
         }
     } catch (error) {
         console.error('重置密码错误:', error)
@@ -135,6 +145,7 @@ const handleSubmit = async () => {
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
     white-space: nowrap;
+    min-width: 120px;
 }
 
 .send-captcha-button:hover:not(:disabled) {

@@ -46,9 +46,14 @@ const router = createRouter({
       component: () => import('../views/datashow/zhexian.vue')
     },
     {
-      path: '/demo',
-      name: 'demo',
-      component: () => import('../views/component/stockindex.vue')
+      path: '/stockdata',
+      name: 'stockdata',
+      component: () => import('../views/datashow/stockdata.vue')
+    },
+    {
+      path: '/stockdatashow',
+      name: 'stockdatashow',
+      component: () => import('../views/stockdatashow.vue')
     }
   ]
 })

@@ -145,31 +145,57 @@ function setType(type) {
         candle: { type }
     })
 }
+function updateData() {
+    setTimeout(() => {
+        const dataList = chart.getDataList()
+        const lastData = dataList[dataList.length - 1]
+        const newData = { ...lastData }
+        newData.close += (Math.random() * 20 - 10)
+        newData.high = Math.max(newData.high, newData.close)
+        newData.low = Math.min(newData.low, newData.close)
+        newData.volume += Math.round(Math.random() * 10)
+        chart.updateData(newData)
+        updateData()
+    }, 600)
+}
 
 const tabTime = async (item) => {
     setType(item.key);
     active.value = item.time;
-    // const data = await fetchData(item.kline_type);
-    // chart.applyNewData(data);
+    //const data = await fetchData(item.kline_type);
+    //chart.applyNewData(data);
     chart.applyNewData(genData())
 
-    chart.createIndicator(item.main, true, { id: 'candle_pane' })
+    // chart.loadMore((timestamp) => {
+    //     loadMoreTimer = setTimeout(() => {
+    //         chart.applyMoreData(genData(timestamp), true)
+    //     }, 2000)
+    // })
 
-    chart.removeIndicator(item.main)
-
-
+    // chart.applyNewData(genData(), true)
+    // updateData()
+    // chart.createIndicator(item.main, true, { id: 'candle_pane' })
+    // chart.removeIndicator(item.main)
 };
 
 onMounted(async () => {
     chart = init(chartId.value);
     setType('area');
     chart.setStyles('red_rise_green_fall');
-    //const initialData = await fetchData(klineData.value[0].kline_type);
-    //chart.applyNewData(initialData);
-    chart.applyNewData(genData())
+    // const initialData = await fetchData(klineData.value[0].kline_type);
+    // chart.applyNewData(initialData);
     chart.setMaxOffsetLeftDistance(0);
     chart.setMaxOffsetRightDistance(0);
     active.value = klineData.value[0].time;
+
+    chart.applyNewData(genData())
+    chart.loadMore((timestamp) => {
+        loadMoreTimer = setTimeout(() => {
+            chart.applyMoreData(genData(timestamp), true)
+        }, 2000)
+    })
+    chart.applyNewData(genData(), true)
+    updateData()
 
 });
 </script>

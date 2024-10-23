@@ -123,7 +123,7 @@ const handleSubmit = async () => {
 
     isLoading.value = true
     try {
-        const response = await axios.post('/User/register', {
+        const response = await axios.post('/User/register/', {
             username: username.value,
             email: email.value,
             passwd: password.value,

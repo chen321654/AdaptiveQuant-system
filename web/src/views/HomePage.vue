@@ -29,6 +29,17 @@
                     <el-menu-item index="3-3">新股申购</el-menu-item>
                 </el-sub-menu>
 
+                <el-menu-item index="search" style="margin-left: auto;">
+                    <el-input v-model="searchQuery" placeholder="搜索" prefix-icon="el-icon-search"
+                        @keyup.enter="handleSearch">
+                        <template #prefix>
+                            <el-icon>
+                                <Search />
+                            </el-icon>
+                        </template>
+                    </el-input>
+                </el-menu-item>
+
                 <el-menu-item index="4" style="margin-left: auto;">
                     <template v-if="isLoggedIn">
                         <span class="username">{{ username }}</span>
@@ -61,12 +72,13 @@
                     </el-menu>
                 </el-aside>
                 <Stockindex ref="" />
+                <StockMarket ref="" />
             </el-main>
         </el-container>
 
         <!-- Modal -->
         <div v-if="isModalVisible" class="modal-overlay" @click.self="closeModal">
-            <UserLogin v-if="currentModal === 'login'" @showRegister="showModal('register')"
+            <UserLogin ref="LoginRef" v-if="currentModal === 'login'" @showRegister="showModal('register')"
                 @showFindPassword="showModal('FindPassword')" @loginSuccess="handleLoginSuccess" />
             <UserRegister v-if="currentModal === 'register'" @showLogin="showModal('login')"
                 @registerSuccess="handleRegisterSuccess" />
@@ -79,20 +91,22 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Menu as IconMenu, Setting } from '@element-plus/icons-vue'
+import { Menu as IconMenu, Setting, Search } from '@element-plus/icons-vue'
 import Stockindex from './component/stockindex.vue'
 import UserLogin from './account/UserLogin.vue'
 import UserRegister from './account/UserRegister.vue'
 import FindPassword from './account/FindPassword.vue'
 import ResetPassword from './account/ResetPassword.vue'
 import jsCookie from 'js-cookie'
-
+import StockMarket from './component/stockMarket.vue'
 
 const isModalVisible = ref(false)
 const currentModal = ref('login')
 const isLoggedIn = ref(false)
 const username = ref('')
 const activeIndex = ref('1')
+const LoginRef = ref(null)
+const searchQuery = ref('')
 
 const showModal = (modalType) => {
     currentModal.value = modalType
@@ -103,10 +117,16 @@ const closeModal = () => {
     isModalVisible.value = false
 }
 
-const handleLoginSuccess = () => {
+const handleSearch = () => {
+    console.log('Searching for:', searchQuery.value)
+    // 实现搜索逻辑
+}
+
+const handleLoginSuccess = (userData) => {
     closeModal()
     isLoggedIn.value = true
-    username.value = UserLogin.value.userData.value
+    username.value = userData
+    console.log('username get successful', userData)
 }
 
 const handleRegisterSuccess = () => {
@@ -141,6 +161,7 @@ const handleClose = (key, keyPath) => {
 }
 </script>
 
+
 <style scoped>
 .layout-container {
     min-height: 100vh;
@@ -150,9 +171,6 @@ const handleClose = (key, keyPath) => {
     padding: 0;
 }
 
-/* .main-container {
-    height: calc(100vh - 60px);
-} */
 
 .modal-overlay {
     position: fixed;
@@ -209,4 +227,24 @@ const handleClose = (key, keyPath) => {
 .el-col {
     margin-bottom: 20px;
 } */
+.el-menu-item .el-input {
+    width: 200px;
+}
+
+:deep(.el-input__wrapper) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+}
+
+:deep(.el-input__inner) {
+    color: #fff;
+}
+
+:deep(.el-input__inner::placeholder) {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+:deep(.el-input__prefix) {
+    color: rgba(255, 255, 255, 0.7);
+}
 </style>

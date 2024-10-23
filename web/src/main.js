@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 //import store from './stores'
+axios.defaults.withCredentials = true
 //创建实例
 const app = createApp(App)
 //全局应用配置

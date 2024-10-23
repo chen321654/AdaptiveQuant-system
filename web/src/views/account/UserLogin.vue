@@ -5,7 +5,7 @@
             <form class="form" @submit.prevent="handleSubmit">
                 <div class="form-group">
                     <label for="username" class="label">用户名</label>
-                    <input id="username" name="username" type="text" autocomplete="nickname" required v-model="Text"
+                    <input id="username" name="username" type="text" autocomplete="nickname" required v-model="username"
                         class="input" />
                 </div>
 
@@ -47,45 +47,44 @@ import Captcha from './Captcha.vue';
 import jsCookie from 'js-cookie';
 import axios from 'axios';
 
-
 const emit = defineEmits(['showRegister', 'showFindPassword', 'loginSuccess'])
+
 const username = ref('')
 const password = ref('')
 const captcha = ref('')
 const captchaRef = ref(null)
+const userData = ref('')
+
 const isLoading = ref(false)
-var userData = ref('')
 const handleSubmit = async () => {
     isLoading.value = true
-
     try {
-        const response = await axios.post('/User/login', {
+        const response = await axios.post('http://127.0.0.1:4523/m1/5211650-4877960-default/User/login', {
             username: username.value,
             password: password.value,
             captcha: captcha.value,
-            hashkey: captchaRef.value.captchaId.value,
+            hashkey: captchaRef.value.captchaId
         })
 
         if (response.data.code == '200') {
-            console.log('Login successful', data)
-            userData = response.headers.get('username')
-            jsCookie.set(response.headers.get('username'), response.headers.get('sessionid'))
 
-            emit('loginSuccess')
+            userData.value = username.value
+            console.log('Login successful', userData.value)
+
+            emit('loginSuccess', userData.value)
         } else {
             alert(response.data.msg)
             captchaRef.value.refreshCaptcha()
             captcha.value = ''
         }
-
     } catch (error) {
-        console.error('Login error:', error)
         alert('登录过程中发生错误，请重试')
     } finally {
         isLoading.value = false
     }
-
 }
+
+defineExpose({ userData });
 </script>
 
 <style scoped>
