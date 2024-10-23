@@ -19,7 +19,7 @@ const captchaUrl = ref('');
 const captchaId = ref('');
 const fetchCaptcha = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:4523/m1/5211650-4877960-default/User/login');
+        const response = await axios.get('/User/login');
         // captchaUrl.value = 'https://pic.616pic.com/ys_bnew_img/00/29/79/9UMK4fzdwr.jpg  '
         captchaUrl.value = 'http://127.0.0.1:8000' + response.data.data.image_url;
         captchaId.value = response.data.data.hashkey;
