@@ -197,5 +197,5 @@ def generate_custom_challenge():
 # CAPTCHA_LENGTH = 4  # 设置验证码位数 默认: 4
 CAPTCHA_TIMEOUT = 5  # 超时(minute)
 CAPTCHA_FONT_SIZE = 24  # 字体大小 默认:22
-# CAPTCHA_IMAGE_SIZE = (130, 45)  # 设置 图片大小 默认: (200, 60)
+CAPTCHA_IMAGE_SIZE = (120, 40)  # 设置 图片大小 默认: (200, 60)
 CAPTCHA_CHALLENGE_FUNCT = generate_custom_challenge  # 验证码字符集, 自定义

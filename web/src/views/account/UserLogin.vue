@@ -59,7 +59,7 @@ const isLoading = ref(false)
 const handleSubmit = async () => {
     isLoading.value = true
     try {
-        const response = await axios.post('/User/login', {
+        const response = await axios.post('/User/login/', {
             username: username.value,
             password: password.value,
             captcha: captcha.value,

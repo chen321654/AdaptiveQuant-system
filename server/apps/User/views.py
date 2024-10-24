@@ -129,8 +129,6 @@ class ChangePasswordView(LoginRequiredJSONMixin, View):
         return response
 
 
-
-
 # 发送验证码
 def SendCaptchaEmail(email):
     email_captcha = "".join(random.sample(string.ascii_letters + string.digits, 8))
@@ -162,6 +160,7 @@ def jarge_captcha(captchaStr, captchaHashkey):
             get_captcha = CaptchaStore.objects.get(hashkey=captchaHashkey)
             CaptchaStore.remove_expired()
             if get_captcha.response == captchaStr.lower():  # 如果验证码匹配
+                get_captcha.delete()
                 return True
         except:
             return False
