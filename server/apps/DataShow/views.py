@@ -48,10 +48,34 @@ class DataGetView(View):
         return JsonResponse({"code": 200})
 
 
-class DataShowView(View):
+class KLineDataGetView(View):
     def get(self, request):
         data = json.loads(request.body)
-        stock_data = invokeApi(data)
+        stock_data = invokeApi(data, 1)
+        # 从 requests.Response 提取内容、状态码和 headers
+        content = stock_data.content  # 获取响应内容
+        status_code = stock_data.status_code  # 获取响应状态码
+        headers = stock_data.headers  # 获取响应头
+
+        # 构建 Django 的 HttpResponse 对象
+        response = HttpResponse(content=content, status=status_code)
+
+        # 设置 headers，过滤掉 hop-by-hop 头部
+        hop_by_hop_headers = ['Connection', 'Keep-Alive', 'Proxy-Authenticate',
+                              'Proxy-Authorization', 'TE', 'Trailers',
+                              'Transfer-Encoding', 'Upgrade']
+
+        for key, value in headers.items():
+            if key not in hop_by_hop_headers:
+                response[key] = value
+
+        return response
+
+
+class NewKLineDataGetView(View):
+    def get(self, request):
+        data = json.loads(request.body)
+        stock_data = invokeApi(data, 2)
         # 从 requests.Response 提取内容、状态码和 headers
         content = stock_data.content  # 获取响应内容
         status_code = stock_data.status_code  # 获取响应状态码
